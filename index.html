@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>8. Sınıf Olasılık Simülasyonu</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #1a1a2e;
+            color: #e94560;
+            text-align: center;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 700px;
+            margin: 0 auto;
+            background: #16213e;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+        }
+        h1 {
+            color: #0f3460;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #4facfe;
+            margin-bottom: 5px;
+        }
+        p {
+            color: #a2a8d3;
+            font-size: 0.95em;
+            margin-bottom: 25px;
+        }
+        .controls {
+            background: #0f3460;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+        }
+        input[type="number"] {
+            padding: 8px;
+            border-radius: 4px;
+            border: 1px solid #4facfe;
+            background: #1a1a2e;
+            color: white;
+            font-size: 16px;
+            width: 100px;
+            text-align: center;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #e94560;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+        button:hover {
+            background-color: #d13b53;
+        }
+        .chart {
+            display: flex;
+            justify-content: space-around;
+            align-items: flex-end;
+            height: 250px;
+            margin-top: 20px;
+            padding: 20px 0 0 0;
+            border-bottom: 2px solid #a2a8d3;
+            border-left: 2px solid #a2a8d3;
+        }
+        .bar-container {
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            align-items: center;
+            width: 12%;
+            height: 100%;
+        }
+        .bar {
+            width: 100%;
+            background-color: #4facfe;
+            border-radius: 4px 4px 0 0;
+            transition: height 0.5s ease-out;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            color: #1a1a2e;
+            font-weight: bold;
+            font-size: 12px;
+            padding-top: 5px;
+        }
+        .label {
+            margin-top: 10px;
+            color: #fff;
+            font-weight: bold;
+        }
+        .stats {
+            margin-top: 20px;
+            font-size: 0.9em;
+            color: #81ecec;
+            text-align: left;
+            background: #1a1a2e;
+            padding: 15px;
+            border-radius: 8px;
+        }
+        .footer {
+            margin-top: 30px;
+            padding-top: 15px;
+            border-top: 1px solid #4facfe;
+            font-size: 0.8em;
+            color: #81ecec;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Büyük Sayılar Kanunu</h1>
+        <p>8. Sınıf Matematik: Teorik ve Deneysel Olasılık Karşılaştırması.<br>Zar atış sayısı arttıkça, deneysel olasılığın teorik olasılığa (%16.6) yaklaşım simülasyonu.</p>
+
+        <div class="controls">
+            <label style="color:white; margin-right: 10px;">Atış Sayısı:</label>
+            <input type="number" id="rollCount" value="1000" min="1" max="100000">
+            <button onclick="simulate()">Zarları At</button>
+        </div>
+
+        <div class="chart" id="chart">
+            <!-- Çubuklar JS ile buraya eklenecek -->
+        </div>
+
+        <div class="stats" id="stats">
+            Sonuçlar bekleniyor...
+        </div>
+
+        <div class="footer">
+            Okyanus OBİT Proje Katılım Çalışması - Matematik
+        </div>
+    </div>
+
+    <script>
+        function simulate() {
+            const rolls = parseInt(document.getElementById('rollCount').value);
+            if(rolls < 1 || isNaN(rolls)) return alert("Geçerli bir sayı girin!");
+
+            const counts = {1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0};
+            
+            // Zarları at
+            for(let i = 0; i < rolls; i++) {
+                const roll = Math.floor(Math.random() * 6) + 1;
+                counts[roll]++;
+            }
+
+            // En yüksek değeri bul (çubuk boylarını ayarlamak için)
+            let maxCount = 0;
+            for(let i = 1; i <= 6; i++) {
+                if(counts[i] > maxCount) maxCount = counts[i];
+            }
+
+            const chart = document.getElementById('chart');
+            const stats = document.getElementById('stats');
+            chart.innerHTML = '';
+            let statsHTML = '<strong>Deneysel Olasılık Sonuçları:</strong><br>';
+
+            // Grafiği ve istatistikleri oluştur
+            for(let i = 1; i <= 6; i++) {
+                const percentage = ((counts[i] / rolls) * 100).toFixed(2);
+                const heightPercentage = (counts[i] / maxCount) * 90; // max %90 yükseklik
+
+                const barHTML = `
+                    <div class="bar-container">
+                        <div class="bar" style="height: ${heightPercentage}%">%${percentage}</div>
+                        <div class="label">${i}</div>
+                    </div>
+                `;
+                chart.innerHTML += barHTML;
+
+                statsHTML += `${i} gelme olasılığı: <strong>%${percentage}</strong> (Teorik: ~%16.66)<br>`;
+            }
+
+            stats.innerHTML = statsHTML;
+        }
+
+        // Sayfa açıldığında başlangıç görünümü
+        simulate();
+    </script>
+</body>
+</html>
