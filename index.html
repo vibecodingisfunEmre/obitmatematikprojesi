@@ -3,262 +3,289 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>8. Sınıf Matematik İnteraktif Eğitim Şöleni</title>
+    <title>İnteraktif Matematik Laboratuvarı</title>
     <style>
+        /* Modern ve Temiz UI Tasarımı */
         :root {
-            --bg-dark: #0f172a;
-            --bg-card: #1e293b;
-            --primary: #38bdf8;
-            --accent: #f43f5e;
-            --text-main: #f8fafc;
+            --bg-main: #0b1121;
+            --bg-card: #151e32;
+            --bg-card-hover: #1e293b;
+            --primary: #0ea5e9;
+            --primary-glow: rgba(14, 165, 233, 0.4);
+            --accent: #8b5cf6;
+            --text-light: #f8fafc;
             --text-muted: #94a3b8;
+            --border-color: #334155;
         }
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        body { background-color: var(--bg-dark); color: var(--text-main); height: 100vh; display: flex; flex-direction: column; }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', 'Segoe UI', sans-serif; }
+        body { background-color: var(--bg-main); color: var(--text-light); line-height: 1.6; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+
+        /* Üst Menü */
+        header { background: rgba(21, 30, 50, 0.8); backdrop-filter: blur(10px); padding: 20px; border-bottom: 1px solid var(--border-color); display: flex; flex-direction: column; align-items: center; gap: 15px; z-index: 100; }
+        h1 { font-size: 1.5rem; background: linear-gradient(to right, var(--primary), var(--accent)); -webkit-background-clip: text; color: transparent; letter-spacing: 1px; }
         
-        /* Navigasyon / Sekmeler */
-        header { background: var(--bg-card); padding: 15px 20px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.5); display: flex; justify-content: space-between; align-items: center; z-index: 10; }
-        h1 { font-size: 1.2rem; color: var(--primary); text-transform: uppercase; letter-spacing: 1px; }
-        .tabs { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 5px; }
-        .tab-btn { background: transparent; color: var(--text-muted); border: 2px solid transparent; padding: 8px 15px; border-radius: 8px; cursor: pointer; font-weight: bold; transition: 0.3s; white-space: nowrap; }
-        .tab-btn:hover { color: var(--text-main); }
-        .tab-btn.active { background: var(--primary); color: #0f172a; }
+        .tabs { display: flex; gap: 10px; background: #0f172a; padding: 5px; border-radius: 12px; border: 1px solid var(--border-color); }
+        .tab-btn { background: transparent; color: var(--text-muted); border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: 600; transition: all 0.3s ease; }
+        .tab-btn:hover { color: var(--text-light); }
+        .tab-btn.active { background: var(--primary); color: #fff; box-shadow: 0 0 15px var(--primary-glow); }
 
-        /* Ana İçerik Alanı */
-        main { flex: 1; overflow-y: auto; padding: 20px; position: relative; }
-        .tab-content { display: none; animation: fadeIn 0.4s ease-in-out; max-width: 900px; margin: 0 auto; }
-        .tab-content.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        /* İçerik Alanı */
+        main { flex: 1; overflow-y: auto; padding: 30px 20px; position: relative; }
+        .tab-content { display: none; opacity: 0; transform: translateY(10px); transition: all 0.4s ease; max-width: 900px; margin: 0 auto; }
+        .tab-content.active { display: block; opacity: 1; transform: translateY(0); }
 
-        /* Ortak Kart Tasarımı */
-        .card { background: var(--bg-card); border-radius: 12px; padding: 20px; margin-bottom: 20px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.3); }
-        h2 { color: var(--primary); margin-bottom: 15px; border-bottom: 1px solid #334155; padding-bottom: 10px; }
+        .card { background: var(--bg-card); border-radius: 16px; padding: 25px; border: 1px solid var(--border-color); box-shadow: 0 10px 30px rgba(0,0,0,0.3); margin-bottom: 25px; }
+        .card-header { font-size: 1.2rem; color: var(--primary); margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; }
+
+        /* 1. SİLİNDİR ANİMASYONU STİLLERİ */
+        .cylinder-stage { position: relative; height: 350px; display: flex; justify-content: center; align-items: center; margin: 20px 0; perspective: 1000px; }
         
-        /* 1. Dönüşüm Geometrisi Stilleri */
-        canvas { background: #0f172a; border-radius: 8px; border: 1px solid #334155; width: 100%; max-width: 500px; display: block; margin: 0 auto; }
-        .controls-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 15px; }
-        button.action-btn { background: var(--primary); color: #0f172a; border: none; padding: 10px; border-radius: 6px; font-weight: bold; cursor: pointer; width: 100%; }
-        button.action-btn:hover { opacity: 0.9; }
-
-        /* 2. 3D Silindir ve Geometrik Cisimler */
-        .scene-3d { perspective: 1000px; height: 300px; display: flex; justify-content: center; align-items: center; margin: 20px 0; }
-        .cylinder-net { position: relative; width: 200px; height: 150px; transform-style: preserve-3d; transition: transform 1.5s ease-in-out; }
-        .surface { position: absolute; background: rgba(56, 189, 248, 0.2); border: 2px solid var(--primary); display: flex; justify-content: center; align-items: center; font-weight: bold; color: var(--primary); transition: all 1.5s ease-in-out; }
-        .lateral { width: 200px; height: 150px; z-index: 2; }
-        .circle { width: 100px; height: 100px; border-radius: 50%; left: 50%; transform: translateX(-50%); }
-        .top-circle { top: -110px; }
-        .bottom-circle { bottom: -110px; }
-
-        /* Silindir Kapanma Animasyonu Sınıfları */
-        .cylinder-net.closed .lateral { background: linear-gradient(90deg, #1e293b, #38bdf8, #1e293b); border-radius: 20px; width: 100px; left: 50px; border: none; }
-        .cylinder-net.closed .top-circle { transform: translateX(-50%) rotateX(70deg) translateZ(75px); top: 25px; background: var(--primary); }
-        .cylinder-net.closed .bottom-circle { transform: translateX(-50%) rotateX(70deg) translateZ(-75px); bottom: 25px; background: var(--primary); }
+        .cyl-net { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1); }
         
-        .formula-box { background: #0f172a; padding: 15px; border-left: 4px solid var(--accent); border-radius: 6px; font-family: monospace; font-size: 1.1rem; margin-bottom: 10px; }
+        .cyl-body { height: 160px; background: linear-gradient(90deg, #0284c7, #38bdf8, #0284c7); transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1); display: flex; align-items: center; justify-content: center; text-align: center; color: transparent; font-weight: bold; overflow: hidden; position: relative; z-index: 2; }
+        
+        .cyl-circle { width: 100px; height: 100px; background: #0ea5e9; border-radius: 50%; position: absolute; left: 50%; display: flex; align-items: center; justify-content: center; text-align: center; color: transparent; font-weight: bold; transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1); z-index: 1; box-shadow: inset 0 -10px 20px rgba(0,0,0,0.2); }
+        .cyl-circle.top { top: 30px; transform: translateX(-50%) rotateX(75deg); }
+        .cyl-circle.bottom { bottom: 30px; transform: translateX(-50%) rotateX(75deg); }
 
-        /* 3. Olasılık Stilleri */
-        .bar-chart { display: flex; align-items: flex-end; height: 200px; gap: 5px; padding-top: 20px; border-bottom: 1px solid var(--text-muted); }
-        .bar-wrapper { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; height: 100%; }
-        .bar { width: 80%; background: var(--accent); transition: height 0.5s; border-radius: 4px 4px 0 0; }
-        .bar-label { margin-top: 5px; font-weight: bold; }
+        /* Silindir Adımları (Görseldeki 1, 2, 3) */
+        /* Adım 1: Kapalı */
+        .step-1 .cyl-body { width: 100px; border-radius: 20px; }
+        
+        /* Adım 2: Yarı Açık */
+        .step-2 .cyl-body { width: 200px; border-radius: 10px; background: linear-gradient(90deg, #0369a1, #38bdf8, #0369a1); }
+        .step-2 .cyl-circle.top { top: -20px; transform: translateX(-50%) rotateX(50deg); }
+        .step-2 .cyl-circle.bottom { bottom: -20px; transform: translateX(-50%) rotateX(50deg); }
+
+        /* Adım 3: Tam Açık (Açınım ve Formüller) */
+        .step-3 .cyl-body { width: 320px; border-radius: 0; background: rgba(14, 165, 233, 0.15); border: 2px dashed #0ea5e9; color: var(--text-light); }
+        .step-3 .cyl-circle { background: rgba(14, 165, 233, 0.2); border: 2px dashed #0ea5e9; color: var(--text-light); transform: translateX(-50%) rotateX(0deg); box-shadow: none; }
+        .step-3 .cyl-circle.top { top: -110px; }
+        .step-3 .cyl-circle.bottom { bottom: -110px; }
+
+        .slider-container { background: #0f172a; padding: 20px; border-radius: 12px; text-align: center; border: 1px solid var(--border-color); }
+        input[type="range"] { width: 80%; max-width: 400px; margin: 15px 0; cursor: pointer; accent-color: var(--primary); }
+        .step-labels { display: flex; justify-content: space-around; max-width: 400px; margin: 0 auto; color: var(--primary); font-weight: bold; }
+
+        /* 2. PİRAMİT STİLLERİ */
+        .pyramid-container { display: flex; flex-wrap: wrap; gap: 30px; align-items: center; justify-content: center; }
+        .pyramid-svg { width: 250px; height: 250px; filter: drop-shadow(0 10px 10px rgba(0,0,0,0.5)); }
+        .formula-list { flex: 1; min-width: 250px; display: flex; flex-direction: column; gap: 12px; }
+        .formula-item { background: #0f172a; border-left: 4px solid var(--accent); padding: 15px; border-radius: 8px; }
+        .formula-item strong { color: var(--accent); display: block; margin-bottom: 5px; font-size: 1.1em; }
+
+        /* Geometri & Olasılık MİNİ STİLLER */
+        canvas { background: #0f172a; border-radius: 8px; border: 1px solid var(--border-color); width: 100%; max-width: 400px; display: block; margin: 0 auto; }
+        .btn-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-top: 15px; }
+        button.action { background: var(--bg-card-hover); color: var(--text-light); border: 1px solid var(--border-color); padding: 10px; border-radius: 8px; cursor: pointer; transition: 0.2s; }
+        button.action:hover { background: var(--primary); color: #fff; border-color: var(--primary); }
+
+        .bar-chart { display: flex; align-items: flex-end; height: 150px; gap: 8px; margin-top: 20px; border-bottom: 2px solid var(--border-color); }
+        .bar-wrap { flex: 1; display: flex; flex-direction: column; align-items: center; height: 100%; justify-content: flex-end; }
+        .bar { width: 100%; background: var(--accent); border-radius: 4px 4px 0 0; transition: height 0.4s; }
     </style>
 </head>
 <body>
 
     <header>
-        <h1>Matematik Şöleni</h1>
+        <h1>Matematik Laboratuvarı</h1>
         <div class="tabs">
-            <button class="tab-btn active" onclick="openTab('tab-geo')">Dönüşüm Geometrisi</button>
-            <button class="tab-btn" onclick="openTab('tab-3d')">3D Cisimler & Açınımlar</button>
-            <button class="tab-btn" onclick="openTab('tab-formulas')">Piramit & Formüller</button>
-            <button class="tab-btn" onclick="openTab('tab-prob')">Olasılık Simülatörü</button>
+            <button class="tab-btn active" onclick="switchTab('tab-silindir')">Silindir Açınımı</button>
+            <button class="tab-btn" onclick="switchTab('tab-piramit')">Piramit</button>
+            <button class="tab-btn" onclick="switchTab('tab-geo')">Dönüşüm</button>
+            <button class="tab-btn" onclick="switchTab('tab-olasilik')">Olasılık</button>
         </div>
     </header>
 
     <main>
-        <!-- SEKME 1: DÖNÜŞÜM GEOMETRİSİ -->
-        <div id="tab-geo" class="tab-content active">
+        <!-- 1. SİLİNDİR SEKMESİ (ÖZEL İSTEK) -->
+        <div id="tab-silindir" class="tab-content active">
             <div class="card">
-                <h2>Koordinat Sisteminde Öteleme ve Yansıma</h2>
-                <canvas id="gridCanvas" width="400" height="400"></canvas>
-                <div class="controls-grid">
-                    <button class="action-btn" onclick="reflect('x')">X Eksenine Yansıt</button>
-                    <button class="action-btn" onclick="reflect('y')">Y Eksenine Yansıt</button>
-                    <button class="action-btn" onclick="translateShape(2, 3)">Sağa 2, Yukarı 3 Ötele</button>
-                    <button class="action-btn" style="background: var(--accent); color: white;" onclick="resetShape()">Sıfırla</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- SEKME 2: 3D CİSİMLER (SİLİNDİR) -->
-        <div id="tab-3d" class="tab-content">
-            <div class="card">
-                <h2>Silindirin Açınımı ve Yüzey Alanı</h2>
-                <p style="color: var(--text-muted); margin-bottom: 10px;">Aşağıdaki butonları kullanarak silindirin 3 boyutlu katlanma ve açılma hareketini interaktif olarak inceleyebilirsiniz.</p>
+                <div class="card-header">Dik Dairesel Silindirin Açınımı ve Formülleri</div>
+                <p style="color: var(--text-muted); text-align: center; margin-bottom: 10px;">Adımları ilerleterek silindirin açınımını ve alan formüllerini keşfedin.</p>
                 
-                <div class="scene-3d">
-                    <div class="cylinder-net" id="cylinder">
-                        <div class="surface top-circle">Üst Taban</div>
-                        <div class="surface lateral">Yanal Yüzey (Dikdörtgen)</div>
-                        <div class="surface bottom-circle">Alt Taban</div>
+                <div class="cylinder-stage">
+                    <div class="cyl-net step-1" id="cylinderNet">
+                        <div class="cyl-circle top">Üst Taban<br>Alan = πr²</div>
+                        <div class="cyl-body">
+                            <div>
+                                Yanal Yüzey (Dikdörtgen)<br>
+                                <span style="color:#38bdf8;">Alan = 2 · π · r · h</span>
+                            </div>
+                        </div>
+                        <div class="cyl-circle bottom">Alt Taban<br>Alan = πr²</div>
                     </div>
                 </div>
 
-                <div class="controls-grid" style="max-width: 400px; margin: 0 auto 20px auto;">
-                    <button class="action-btn" onclick="toggleCylinder(true)">Silindiri Kapat (3D)</button>
-                    <button class="action-btn" style="background: var(--text-muted);" onclick="toggleCylinder(false)">Açınımı Göster (2D)</button>
-                </div>
-
-                <div class="formula-box">Yanal Alan = 2 · π · r · h</div>
-                <div class="formula-box">Yüzey Alanı = 2 · (π · r²) + (2 · π · r · h)</div>
-                <div class="formula-box">Hacim = π · r² · h</div>
-            </div>
-        </div>
-
-        <!-- SEKME 3: PİRAMİT VE DİĞER FORMÜLLER -->
-        <div id="tab-formulas" class="tab-content">
-            <div class="card">
-                <h2>Dik Piramit ve Koninin Temel Özellikleri</h2>
-                <p style="margin-bottom: 15px;">Dik piramitlerin yan yüzleri ikizkenar üçgenlerden oluşur. Tabanı hangi çokgense o ismi alır (Kare dik piramit vb.).</p>
-                
-                <div style="display: flex; gap: 20px; flex-wrap: wrap;">
-                    <div style="flex: 1; min-width: 250px;">
-                        <h3 style="color:var(--accent); margin-bottom: 10px;">Kare Dik Piramit Formülleri</h3>
-                        <div class="formula-box">Taban Alanı = a²</div>
-                        <div class="formula-box">Yanal Alan = 4 · (a · h_yan / 2)</div>
-                        <div class="formula-box">Hacim = (1/3) · Taban Alanı · Yükseklik</div>
-                    </div>
-                    <div style="flex: 1; min-width: 250px;">
-                        <h3 style="color:var(--accent); margin-bottom: 10px;">Koni Formülleri</h3>
-                        <div class="formula-box">Taban Alanı = π · r²</div>
-                        <div class="formula-box">Yanal Alan = π · r · a (a: Ana doğru)</div>
-                        <div class="formula-box">Hacim = (1/3) · π · r² · h</div>
+                <div class="slider-container">
+                    <input type="range" min="1" max="3" value="1" id="stepSlider" oninput="updateCylinderStep(this.value)">
+                    <div class="step-labels">
+                        <span>1. Adım (Kapalı)</span>
+                        <span>2. Adım (Açılıyor)</span>
+                        <span>3. Adım (Açınım)</span>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- SEKME 4: OLASILIK SİMÜLATÖRÜ -->
-        <div id="tab-prob" class="tab-content">
+        <!-- 2. PİRAMİT SEKMESİ (ÖZEL İSTEK) -->
+        <div id="tab-piramit" class="tab-content">
             <div class="card">
-                <h2>Deneysel ve Teorik Olasılık</h2>
-                <p style="color:var(--text-muted);">Zar atış sayısı arttıkça deneysel olasılık teorik olasılığa (%16.6) yaklaşır.</p>
+                <div class="card-header">Kare Dik Piramit Formülleri</div>
                 
-                <div class="controls-grid" style="max-width: 300px; margin-top: 15px;">
-                    <button class="action-btn" onclick="rollDice(100)">100 Kere Zar At</button>
-                    <button class="action-btn" onclick="rollDice(1000)">1000 Kere Zar At</button>
-                </div>
+                <div class="pyramid-container">
+                    <!-- 3D Görünümlü SVG Piramit Çizimi -->
+                    <svg class="pyramid-svg" viewBox="0 0 200 200">
+                        <!-- Arka Yüz -->
+                        <polygon points="100,20 160,160 40,160" fill="#1e293b" />
+                        <!-- Sol Ön Yüz -->
+                        <polygon points="100,20 40,160 100,180" fill="#38bdf8" opacity="0.9" />
+                        <!-- Sağ Ön Yüz -->
+                        <polygon points="100,20 100,180 160,160" fill="#0284c7" opacity="0.9" />
+                        <!-- Taban ve Yükseklik Çizgileri -->
+                        <line x1="100" y1="20" x2="100" y2="160" stroke="#f8fafc" stroke-dasharray="4" stroke-width="2" />
+                        <text x="105" y="100" fill="#f8fafc" font-size="12">h (Yükseklik)</text>
+                    </svg>
 
-                <div class="bar-chart" id="diceChart">
-                    <!-- Çubuklar JS ile gelecek -->
+                    <!-- Basitleştirilmiş Formül Kartları -->
+                    <div class="formula-list">
+                        <div class="formula-item">
+                            <strong>Taban Alanı</strong>
+                            Kare olduğu için tabanın bir kenarının karesidir. <br>
+                            <span style="color:var(--text-muted)">Formül: a²</span>
+                        </div>
+                        <div class="formula-item">
+                            <strong>Yanal Alan</strong>
+                            Yanlardaki 4 adet üçgenin alanları toplamıdır.<br>
+                            <span style="color:var(--text-muted)">Formül: 4 × (Taban Kenarı × Yan Yükseklik) / 2</span>
+                        </div>
+                        <div class="formula-item" style="border-left-color: var(--primary);">
+                            <strong style="color:var(--primary);">Piramidin Hacmi</strong>
+                            Prizmanın hacminin üçte birine eşittir.<br>
+                            <span style="color:var(--text-light)">Formül: (Taban Alanı × Yükseklik) / 3</span>
+                        </div>
+                    </div>
                 </div>
-                <div id="probStats" style="margin-top: 15px; font-family: monospace;"></div>
             </div>
         </div>
 
+        <!-- 3. GEOMETRİ SEKMESİ (KORUNDU) -->
+        <div id="tab-geo" class="tab-content">
+            <div class="card">
+                <div class="card-header">Dönüşüm Geometrisi: Öteleme ve Yansıma</div>
+                <div style="display:flex; flex-wrap:wrap; gap: 20px; align-items:center; justify-content:center;">
+                    <canvas id="geoCanvas" width="300" height="300"></canvas>
+                    <div class="btn-grid" style="flex:1; min-width: 200px;">
+                        <button class="action" onclick="geoReflect('x')">X Eksenine Yansıt</button>
+                        <button class="action" onclick="geoReflect('y')">Y Eksenine Yansıt</button>
+                        <button class="action" onclick="geoTranslate()">Ötele (+2x, +2y)</button>
+                        <button class="action" style="border-color: #ef4444; color: #ef4444;" onclick="geoReset()">Sıfırla</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 4. OLASILIK SEKMESİ (KORUNDU) -->
+        <div id="tab-olasilik" class="tab-content">
+            <div class="card">
+                <div class="card-header">Deneysel Olasılık Simülatörü</div>
+                <div class="btn-grid">
+                    <button class="action" onclick="rollDice(50)">50 Zar At</button>
+                    <button class="action" onclick="rollDice(500)">500 Zar At</button>
+                </div>
+                <div class="bar-chart" id="diceChart"></div>
+            </div>
+        </div>
     </main>
 
     <script>
-        // --- SEKME MANTIĞI ---
-        function openTab(tabId) {
-            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
-            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+        // Sekme Geçiş Mantığı
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
             document.getElementById(tabId).classList.add('active');
             event.currentTarget.classList.add('active');
             
-            // Eğer geometri sekmesi açıldıysa canvası tekrar çiz
-            if(tabId === 'tab-geo') updateScreen();
+            if(tabId === 'tab-geo') drawGeo(); // Geometri sekmesi açılınca çizimi yenile
         }
 
-        // --- 1. DÖNÜŞÜM GEOMETRİSİ (CANVAS) ---
-        const canvas = document.getElementById('gridCanvas');
+        // 1. Silindir Animasyonu Mantığı
+        function updateCylinderStep(step) {
+            const net = document.getElementById('cylinderNet');
+            // Eski sınıfları temizle
+            net.classList.remove('step-1', 'step-2', 'step-3');
+            // Yeni sınıfı ekle
+            net.classList.add(`step-${step}`);
+        }
+
+        // 3. Geometri Mantığı (Basitleştirilmiş)
+        const canvas = document.getElementById('geoCanvas');
         const ctx = canvas.getContext('2d');
-        const scale = 20; 
-        const originX = canvas.width / 2;
-        const originY = canvas.height / 2;
-        const defaultShape = [{x: 1, y: 1}, {x: 5, y: 1}, {x: 3, y: 6}];
-        let currentShape = JSON.parse(JSON.stringify(defaultShape));
+        const defaultTriangle = [{x: 1, y: 1}, {x: 4, y: 1}, {x: 2, y: 4}];
+        let currentTriangle = JSON.parse(JSON.stringify(defaultTriangle));
 
-        function drawGrid() {
+        function drawGeo() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.strokeStyle = '#334155'; ctx.lineWidth = 1;
-            for (let i = 0; i <= canvas.width; i += scale) {
-                ctx.beginPath(); ctx.moveTo(i, 0); ctx.lineTo(i, canvas.height); ctx.stroke();
-                ctx.beginPath(); ctx.moveTo(0, i); ctx.lineTo(canvas.width, i); ctx.stroke();
-            }
-            ctx.strokeStyle = '#94a3b8'; ctx.lineWidth = 2;
-            ctx.beginPath(); ctx.moveTo(originX, 0); ctx.lineTo(originX, canvas.height); ctx.stroke(); // Y
-            ctx.beginPath(); ctx.moveTo(0, originY); ctx.lineTo(canvas.width, originY); ctx.stroke(); // X
-        }
-
-        function drawShape(shape, color) {
-            if(shape.length < 3) return;
-            ctx.beginPath();
-            ctx.moveTo(originX + (shape[0].x * scale), originY - (shape[0].y * scale));
-            for (let i = 1; i < shape.length; i++) {
-                ctx.lineTo(originX + (shape[i].x * scale), originY - (shape[i].y * scale));
-            }
-            ctx.closePath();
-            ctx.strokeStyle = color; ctx.lineWidth = 3; ctx.stroke();
-            ctx.fillStyle = color + '66'; ctx.fill();
-        }
-
-        function updateScreen() {
-            drawGrid();
-            drawShape(defaultShape, '#ffffff'); // Orijinal şekil (beyaz)
-            drawShape(currentShape, '#38bdf8'); // Yeni konum (mavi)
-        }
-
-        function reflect(axis) {
-            currentShape = currentShape.map(p => axis === 'x' ? {x: p.x, y: -p.y} : {x: -p.x, y: p.y});
-            updateScreen();
-        }
-
-        function translateShape(dx, dy) {
-            currentShape = currentShape.map(p => ({x: p.x + dx, y: p.y + dy}));
-            updateScreen();
-        }
-
-        function resetShape() {
-            currentShape = JSON.parse(JSON.stringify(defaultShape));
-            updateScreen();
-        }
-
-        // --- 2. 3D SİLİNDİR ANİMASYONU ---
-        function toggleCylinder(close) {
-            const cyl = document.getElementById('cylinder');
-            if(close) {
-                cyl.classList.add('closed');
-            } else {
-                cyl.classList.remove('closed');
-            }
-        }
-
-        // --- 4. OLASILIK SİMÜLATÖRÜ ---
-        function rollDice(times) {
-            const counts = [0, 0, 0, 0, 0, 0];
-            for(let i=0; i<times; i++) counts[Math.floor(Math.random() * 6)]++;
+            const ox = canvas.width/2; const oy = canvas.height/2; const scale = 15;
             
-            const max = Math.max(...counts);
-            const chart = document.getElementById('diceChart');
-            const stats = document.getElementById('probStats');
-            chart.innerHTML = ''; stats.innerHTML = `Toplam Atış: ${times}<br>`;
+            // Izgara ve Eksenler
+            ctx.strokeStyle = '#1e293b'; ctx.lineWidth = 1;
+            for(let i=0; i<canvas.width; i+=scale) {
+                ctx.beginPath(); ctx.moveTo(i,0); ctx.lineTo(i,canvas.height); ctx.stroke();
+                ctx.beginPath(); ctx.moveTo(0,i); ctx.lineTo(canvas.width,i); ctx.stroke();
+            }
+            ctx.strokeStyle = '#64748b'; ctx.lineWidth = 2;
+            ctx.beginPath(); ctx.moveTo(ox,0); ctx.lineTo(ox,canvas.height); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(0,oy); ctx.lineTo(canvas.width,oy); ctx.stroke();
 
-            counts.forEach((count, i) => {
-                const percent = ((count / times) * 100).toFixed(1);
-                const height = (count / max) * 90;
-                chart.innerHTML += `
-                    <div class="bar-wrapper">
-                        <div class="bar" style="height: ${height}%"></div>
-                        <div class="bar-label">${i+1}</div>
-                    </div>`;
-                stats.innerHTML += `Zar ${i+1}: %${percent} | `;
-            });
+            // Şekli Çizme Fonksiyonu
+            const drawShape = (shape, color) => {
+                ctx.beginPath();
+                ctx.moveTo(ox + shape[0].x*scale, oy - shape[0].y*scale);
+                for(let i=1; i<shape.length; i++) ctx.lineTo(ox + shape[i].x*scale, oy - shape[i].y*scale);
+                ctx.closePath();
+                ctx.fillStyle = color + '66'; ctx.fill();
+                ctx.strokeStyle = color; ctx.lineWidth = 2; ctx.stroke();
+            };
+
+            drawShape(defaultTriangle, '#94a3b8'); // İlk hal gölgesi
+            drawShape(currentTriangle, '#0ea5e9'); // Aktif hal
         }
 
-        // Sayfa yüklendiğinde canvası çiz ve zarları sıfırla
-        updateScreen();
-        rollDice(100);
+        function geoReflect(axis) {
+            currentTriangle = currentTriangle.map(p => axis === 'x' ? {x: p.x, y: -p.y} : {x: -p.x, y: p.y});
+            drawGeo();
+        }
+        function geoTranslate() {
+            currentTriangle = currentTriangle.map(p => ({x: p.x + 2, y: p.y + 2}));
+            drawGeo();
+        }
+        function geoReset() {
+            currentTriangle = JSON.parse(JSON.stringify(defaultTriangle));
+            drawGeo();
+        }
+
+        // 4. Olasılık Mantığı
+        function rollDice(times) {
+            const counts = [0,0,0,0,0,0];
+            for(let i=0; i<times; i++) counts[Math.floor(Math.random()*6)]++;
+            const max = Math.max(...counts);
+            
+            let html = '';
+            counts.forEach((c, i) => {
+                const height = (c/max) * 90;
+                html += `<div class="bar-wrap">
+                            <div class="bar" style="height:${height}%"></div>
+                            <span style="font-size:12px; margin-top:5px;">${i+1}</span>
+                         </div>`;
+            });
+            document.getElementById('diceChart').innerHTML = html;
+        }
+
+        // Başlangıç Kurulumları
+        drawGeo();
+        rollDice(50);
     </script>
 </body>
 </html>
